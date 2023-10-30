@@ -5,14 +5,15 @@
     <title>{{ title }}</title>
 </head>
 <body>
-<p>{{menu}}</p>
-<p>{{float}}</p>
-<p>{{lst}}</p>
-<p>{{set}}</p>
-<p>{{dict}}</p>
-<p>{{dict.key_1}}</p>
-<p>{{obj}}</p>
-<p>{{obj.a}}</p>
-<h1>{{title}}</h1>
+<p>{{ menu|join:" | " }}</p>
+<p>{{ float|divisibleby:"2" }}</p>
+<p>{{ lst|length }}</p>
+<p>{{ set }}</p>
+<p>{{ dict }}</p>
+<p>{{ dict.key_1 }}</p>
+<p>{{ obj }}</p>
+<p>{{ obj.a }}</p>
+<p>{{ url }}</p>
+<h1>{{ title }}</h1>
 </body>
 </html>
