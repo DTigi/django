@@ -24,8 +24,8 @@ class Women(models.Model):
     husband = models.OneToOneField('Husband', on_delete=models.SET_NULL, null=True, blank=True, related_name='woman',
                                    verbose_name="Муж")
 
-    published = PublishedModel()
     objects = models.Manager()
+    published = PublishedModel()
 
     class Meta:
         verbose_name = 'Известные женщины'
@@ -75,3 +75,5 @@ class Husband(models.Model):
 
     def __str__(self):
         return self.name
+
+
