@@ -16,7 +16,7 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
 def index(request): # HttpRequest
     # t = render_to_string('women/index.html')
     # return HttpResponse(t)
-    posts = Women.objects.all().select_related('cat') # Women.published.all().select_related('cat')  published - пользовательский менеджер для отображения только опубликованных постов
+    posts = Women.published.all().select_related('cat')
     data = {
         'title': 'Главная страница',
         'menu': menu,

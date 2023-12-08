@@ -23,6 +23,11 @@ class MarriedFilter(admin.SimpleListFilter):
 
 @admin.register(Women)
 class WomenAdmin(admin.ModelAdmin):
+    fields = ['title', 'slug', 'content', 'cat', 'husband', 'tags']
+    # exclude = ['tags', 'is_published']
+    # readonly_fields = ['slug']
+    prepopulated_fields = {"slug": ("title",)}
+    filter_horizontal = ['tags']
     list_display = ('title', 'time_create', 'is_published', 'cat', "brief_info")
     list_display_links = ('title',)
     ordering = ['-time_create', 'title']
@@ -46,6 +51,10 @@ class WomenAdmin(admin.ModelAdmin):
     def set_draft(self, request, queryset):
         count = queryset.update(is_published=Women.Status.DRAFT)
         self.message_user(request, f"{count} записи(ей) сняты с публикации!", messages.WARNING)
+
+    # def save(self, *args, **kwargs):
+    #     self.slug = slugify(self.title, allow_unicode=True)
+    #     super().save(*args, **kwargs)
 
 
 @admin.register(Category)
