@@ -49,11 +49,15 @@ def addpage(request):
     if request.method == 'POST':
         form = AddPostForm(request.POST)
         if form.is_valid():
-            try:
-                Women.objects.create(**form.cleaned_data)
-                return redirect('home')
-            except:
-                form.add_error(None, 'Ошибка добавления поста')
+            """Для формы, не связанной с моделью, код ниже"""
+            # try:
+            #     Women.objects.create(**form.cleaned_data)
+            #     return redirect('home')
+            # except:
+            #     form.add_error(None, 'Ошибка добавления поста')
+            """Для формы, связанной с моделью, ниже"""
+            form.save()
+            return redirect('home')
     else:
         form = AddPostForm()
 
