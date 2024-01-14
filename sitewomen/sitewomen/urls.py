@@ -1,5 +1,5 @@
 """
-URL configuration for djsite project.
+URL configuration for sitewomen project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -18,7 +18,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
-from djsite import settings
+from sitewomen import settings
+from women import views
 from women.views import page_not_found
 
 urlpatterns = [
@@ -30,6 +31,8 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+
 handler404 = page_not_found
+
 admin.site.site_header = "Панель администрирования"
 admin.site.index_title = "Известные женщины мира"
