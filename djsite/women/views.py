@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 
 from women.forms import AddPostForm, UploadFileForm
-from women.models import Women, Category, TagPost
+from women.models import Women, Category, TagPost, UploadFile
 
 menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Добавить статью", 'url_name': 'add_page'},
@@ -30,27 +30,29 @@ def index(request): # HttpRequest
     return render(request, 'women/index.html', context=data)
 
 
-def handle_uploaded_file(f):
-    name = f.name
-    ext = ''
-
-    if '.' in name:
-        ext = name[name.rindex('.'):]
-        name = name[:name.rindex('.')]
-
-    suffix = str(uuid.uuid4())
-
-    with open(f"uploads/{f.name}_{suffix}{ext}", "wb+") as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
+# def handle_uploaded_file(f):
+#     name = f.name
+#     ext = ''
+#
+#     if '.' in name:
+#         ext = name[name.rindex('.'):]
+#         name = name[:name.rindex('.')]
+#
+#     suffix = str(uuid.uuid4())
+#
+#     with open(f"uploads/{f.name}_{suffix}{ext}", "wb+") as destination:
+#         for chunk in f.chunks():
+#             destination.write(chunk)
 
 
 def about(request): # HttpRequest
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            handle_uploaded_file(form.cleaned_data['file'])
-        # handle_uploaded_file(request.FILES['file_upload'])
+          # handle_uploaded_file(form.cleaned_data['file'])
+          # handle_uploaded_file(request.FILES['file_upload'])
+            fp = UploadFile(file=form.cleaned_data['file'])
+            fp.save()
     else:
         form = UploadFileForm()
 
@@ -72,7 +74,7 @@ def show_post(request, post_slug):
 
 def addpage(request):
     if request.method == 'POST':
-        form = AddPostForm(request.POST)
+        form = AddPostForm(request.POST, request.FILES)
         if form.is_valid():
             """Для формы, не связанной с моделью, код ниже"""
             # try:
