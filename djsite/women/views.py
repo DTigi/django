@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 
 from women.forms import AddPostForm, UploadFileForm
 from women.models import Women, Category, TagPost, UploadFile
@@ -18,22 +18,23 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
         ]
 
 
-def index(request): # HttpRequest
-    # t = render_to_string('women/index.html')
-    # return HttpResponse(t)
-    posts = Women.published.all().select_related('cat')
-    data = {
-        'title': 'Главная страница',
-        'menu': menu,
-        'posts': posts,
-        'cat_selected': 0,  # не обязательная строчка
-    }
+# def index(request): # HttpRequest
+#     # t = render_to_string('women/index.html')
+#     # return HttpResponse(t)
+#     posts = Women.published.all().select_related('cat')
+#     data = {
+#         'title': 'Главная страница',
+#         'menu': menu,
+#         'posts': posts,
+#         'cat_selected': 0,  # не обязательная строчка
+#     }
+#
+#     return render(request, 'women/index.html', context=data)
 
-    return render(request, 'women/index.html', context=data)
 
-
-class WomenHome(TemplateView):
+class WomenHome(ListView):
     template_name = 'women/index.html'
+    context_object_name = 'posts'
     # extra_context = {
     #     'title': 'Главная страница',
     #     'menu': menu,
@@ -41,13 +42,16 @@ class WomenHome(TemplateView):
     #     'cat_selected': 0,
     # }
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Главная страница'
         context['menu'] = menu
-        context['posts'] = Women.published.all().select_related('cat')
-        context['cat_selected'] = int(self.request.GET.get('cat_id', 0))
+        #context['posts'] = Women.published.all().select_related('cat')
+        context['cat_selected'] = 0
         return context
+
+    def get_queryset(self):
+        return Women.published.all().select_related('cat')
 
 
 # def handle_uploaded_file(f):
@@ -142,17 +146,34 @@ def blog(request): # HttpRequest
     return render(request, 'women/blog.html')
 
 
-def show_category(request, cat_slug):
-    category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk).select_related('cat')
-    data = {
-        'title': f'Рубрика: {category.name}',
-        'menu': menu,
-        'posts': posts,
-        'cat_selected': category.pk,
-    }
+# def show_category(request, cat_slug):
+#     category = get_object_or_404(Category, slug=cat_slug)
+#     posts = Women.published.filter(cat_id=category.pk).select_related('cat')
+#     data = {
+#         'title': f'Рубрика: {category.name}',
+#         'menu': menu,
+#         'posts': posts,
+#         'cat_selected': category.pk,
+#     }
+#
+#     return render(request, 'women/index.html', context=data)
 
-    return render(request, 'women/index.html', context=data)
+
+class WomenCategory(ListView):
+    template_name = 'women/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cat = context['posts'][0].cat
+        context['title'] = 'Категория - ' + cat.name
+        context['menu'] = menu
+        context['cat_selected'] = cat.id
+        return context
+
+    def get_queryset(self):
+        return Women.published.filter(cat__slug=self.kwargs['cat_slug']).select_related('cat')
 
 
 def show_tag_postlist(request, tag_slug):

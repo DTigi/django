@@ -11,6 +11,6 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('post/<slug:post_slug>/', views.show_post, name='post'),
     path('blog/', views.blog, name='blog'),
-    path('category/<slug:cat_slug>/', views.show_category, name='category'),
+    path('category/<slug:cat_slug>/', views.WomenCategory.as_view(), name='category'),
     path('tag/<slug:tag_slug>/', views.show_tag_postlist, name='tag'),
 ]
