@@ -5,6 +5,8 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.template.defaultfilters import slugify
+from django.views import View
+from django.views.generic import TemplateView
 
 from women.forms import AddPostForm, UploadFileForm
 from women.models import Women, Category, TagPost, UploadFile
@@ -28,6 +30,24 @@ def index(request): # HttpRequest
     }
 
     return render(request, 'women/index.html', context=data)
+
+
+class WomenHome(TemplateView):
+    template_name = 'women/index.html'
+    # extra_context = {
+    #     'title': 'Главная страница',
+    #     'menu': menu,
+    #     'posts': Women.published.all().select_related('cat'),
+    #     'cat_selected': 0,
+    # }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Главная страница'
+        context['menu'] = menu
+        context['posts'] = Women.published.all().select_related('cat')
+        context['cat_selected'] = int(self.request.GET.get('cat_id', 0))
+        return context
 
 
 # def handle_uploaded_file(f):
@@ -72,29 +92,42 @@ def show_post(request, post_slug):
     return render(request, 'women/post.html', data)
 
 
-def addpage(request):
-    if request.method == 'POST':
+# def addpage(request):
+#     if request.method == 'POST':
+#         form = AddPostForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             """Для формы, не связанной с моделью, код ниже"""
+#             # try:
+#             #     Women.objects.create(**form.cleaned_data)
+#             #     return redirect('home')
+#             # except:
+#             #     form.add_error(None, 'Ошибка добавления поста')
+#             """Для формы, связанной с моделью, ниже"""
+#             form.save()
+#             return redirect('home')
+#     else:
+#         form = AddPostForm()
+#
+#     data = {
+#             'menu': menu,
+#             'title': 'Добавление статьи',
+#             'form': form
+#             }
+#
+#     return render(request, 'women/addpage.html', data)
+
+
+class AddPage(View):
+    def get(self, request):
+        form = AddPostForm()
+        return render(request, 'women/addpage.html', {'menu': menu, 'title': 'Добавление статьи', 'form': form})
+
+    def post(self, request):
         form = AddPostForm(request.POST, request.FILES)
         if form.is_valid():
-            """Для формы, не связанной с моделью, код ниже"""
-            # try:
-            #     Women.objects.create(**form.cleaned_data)
-            #     return redirect('home')
-            # except:
-            #     form.add_error(None, 'Ошибка добавления поста')
-            """Для формы, связанной с моделью, ниже"""
             form.save()
             return redirect('home')
-    else:
-        form = AddPostForm()
-
-    data = {
-            'menu': menu,
-            'title': 'Добавление статьи',
-            'form': form
-            }
-
-    return render(request, 'women/addpage.html', data)
+        return render(request, 'women/addpage.html', {'menu': menu, 'title': 'Добавление статьи', 'form': form})
 
 
 def contact(request):
