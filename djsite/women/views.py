@@ -3,10 +3,10 @@ import uuid
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.template.defaultfilters import slugify
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, FormView
 
 from women.forms import AddPostForm, UploadFileForm
 from women.models import Women, Category, TagPost, UploadFile
@@ -83,17 +83,17 @@ def about(request): # HttpRequest
     return render(request, 'women/about.html', {'title': 'О сайте', 'menu': menu, 'form': form})
 
 
-def show_post(request, post_slug):
-    post = get_object_or_404(Women, slug=post_slug)
-
-    data = {
-        'title': post.title,
-        'menu': menu,
-        'post': post,
-        'cat_selected': 1,
-    }
-
-    return render(request, 'women/post.html', data)
+# def show_post(request, post_slug):
+#     post = get_object_or_404(Women, slug=post_slug)
+#
+#     data = {
+#         'title': post.title,
+#         'menu': menu,
+#         'post': post,
+#         'cat_selected': 1,
+#     }
+#
+#     return render(request, 'women/post.html', data)
 
 
 class ShowPost(DetailView):
@@ -136,17 +136,18 @@ class ShowPost(DetailView):
 #     return render(request, 'women/addpage.html', data)
 
 
-class AddPage(View):
-    def get(self, request):
-        form = AddPostForm()
-        return render(request, 'women/addpage.html', {'menu': menu, 'title': 'Добавление статьи', 'form': form})
+class AddPage(FormView):
+    form_class = AddPostForm
+    template_name = 'women/addpage.html'
+    success_url = reverse_lazy('home')
+    extra_context = {
+        'menu': menu,
+        'title': 'Добавление статьи',
+    }
 
-    def post(self, request):
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-        return render(request, 'women/addpage.html', {'menu': menu, 'title': 'Добавление статьи', 'form': form})
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 
 
 def contact(request):
