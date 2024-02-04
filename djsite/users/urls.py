@@ -35,6 +35,8 @@ urlpatterns = [
     path('password-reset/complete/',
          PasswordResetCompleteView.as_view(template_name="users/password_reset_complete.html"),
          name='password_reset_complete'),
+    # Регистрация нового пользователя
     path('register/', views.RegisterUser.as_view(), name='register'),
+    # Профиль пользователя
     path('profile/', views.ProfileUser.as_view(), name='profile'),
 ]

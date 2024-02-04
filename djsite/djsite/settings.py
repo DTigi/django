@@ -147,4 +147,18 @@ AUTHENTICATION_BACKENDS = [
     'users.authentication.EmailAuthBackend',
 ]
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+#EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" # для отправки писем в консоль
+EMAIL_HOST = "smtp.mail.ru"
+EMAIL_PORT = '465'
+EMAIL_HOST_USER = '9665507@mail.ru'
+EMAIL_HOST_PASSWORD = 'JbdhW4J8b5dLbhKDEs96'
+EMAIL_USE_TLS = True
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
+EMAIL_ADMIN = EMAIL_HOST_USER
+
+
+AUTH_USER_MODEL = 'users.User'
+
+DEFAULT_USER_IMAGE = MEDIA_URL + 'users/default.png'
