@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'women.apps.WomenConfig',
     'users.apps.UsersConfig',
     'debug_toolbar',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +144,7 @@ LOGIN_URL = 'users:login'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'users.authentication.EmailAuthBackend',
 ]
@@ -162,3 +164,19 @@ EMAIL_ADMIN = EMAIL_HOST_USER
 AUTH_USER_MODEL = 'users.User'
 
 DEFAULT_USER_IMAGE = MEDIA_URL + 'users/default.png'
+
+SOCIAL_AUTH_GITHUB_KEY = '456d80b5915e03a8a9f7'
+SOCIAL_AUTH_GITHUB_SECRET = '5d010d86ea8e25c9d808074bd34883405acb9403'
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'users.pipeline.new_users_handler',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
