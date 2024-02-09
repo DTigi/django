@@ -10,6 +10,7 @@ from django.urls import reverse, reverse_lazy
 from django.template.defaultfilters import slugify
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
+from django.core.cache import cache
 
 from women.forms import AddPostForm, UploadFileForm, ContactForm
 from women.models import Women, Category, TagPost, UploadFile
@@ -25,7 +26,12 @@ class WomenHome(DataMixin, ListView):
         return self.get_mixin_context(super().get_context_data(**kwargs), title='Главная страница', cat_selected=0)
 
     def get_queryset(self):
-        return Women.published.all().select_related('cat')
+        w_lst = cache.get('women_posts')
+        if not w_lst:
+            w_lst = Women.published.all().select_related('cat')
+            cache.set('women_posts', w_lst, 60)
+
+        return w_lst
 
 
 @login_required
