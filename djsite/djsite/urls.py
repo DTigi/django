@@ -17,9 +17,18 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from django.views.decorators.cache import cache_page
 
 from djsite import settings
+from women.sitemaps import PostSitemap, CategorySitemap
 from women.views import page_not_found
+from django.contrib.sitemaps.views import sitemap
+from women.models import Women
+
+sitemaps = {
+    'posts': PostSitemap,
+    'cats': CategorySitemap,
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +37,7 @@ urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('captcha/', include('captcha.urls')),
+    path('sitemap.xml', cache_page(86400)(sitemap), {'sitemaps': sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
 ]
 
 if settings.DEBUG:
