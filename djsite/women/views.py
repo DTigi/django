@@ -19,7 +19,7 @@ from django.views.generic import (
     DeleteView,
 )
 from django.core.cache import cache
-from rest_framework import generics
+from rest_framework import generics, viewsets
 
 from women.forms import AddPostForm, UploadFileForm, ContactForm
 from women.models import Women, Category, TagPost, UploadFile
@@ -166,16 +166,21 @@ def page_not_found(request, exception):
 # ____________________API_____________________________________________________________________
 
 
-class WomenAPIView(generics.ListCreateAPIView):
+class WomenViewSet(viewsets.ModelViewSet):
     queryset = Women.objects.all()
     serializer_class = WomenSerializer
 
 
-class WomenAPIUpdate(generics.UpdateAPIView):
-    queryset = Women.objects.all()
-    serializer_class = WomenSerializer
-
-
-class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Women.objects.all()
-    serializer_class = WomenSerializer
+# class WomenAPIView(generics.ListCreateAPIView):
+#     queryset = Women.objects.all()
+#     serializer_class = WomenSerializer
+#
+#
+# class WomenAPIUpdate(generics.UpdateAPIView):
+#     queryset = Women.objects.all()
+#     serializer_class = WomenSerializer
+#
+#
+# class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Women.objects.all()
+#     serializer_class = WomenSerializer

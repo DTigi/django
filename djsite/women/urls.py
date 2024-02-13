@@ -1,5 +1,10 @@
-from django.urls import path, register_converter
+from django.urls import path, register_converter, include
 from . import views, converters
+from rest_framework import routers
+
+
+router = routers.SimpleRouter()
+router.register(r"women", views.WomenViewSet)
 
 register_converter(converters.FourDigitYearConverter, "year4")
 
@@ -15,7 +20,8 @@ urlpatterns = [
     path("tag/<slug:tag_slug>/", views.TagPostList.as_view(), name="tag"),
     path("edit/<slug:slug>/", views.UpdatePage.as_view(), name="edit_page"),
     path("delete/<slug:slug>/", views.DeletePage.as_view(), name="edit_page"),
-    path("api/v1/womenlist/", views.WomenAPIView.as_view()),
-    path("api/v1/womenlist/<int:pk>/", views.WomenAPIUpdate.as_view()),
-    path("api/v1/womendetail/<int:pk>/", views.WomenAPIDetailView.as_view()),
+    path("api/v1/", include(router.urls)),
+    # path("api/v1/womenlist/", views.WomenAPIView.as_view()),
+    # path("api/v1/womenlist/<int:pk>/", views.WomenAPIUpdate.as_view()),
+    # path("api/v1/womendetail/<int:pk>/", views.WomenAPIDetailView.as_view()),
 ]
