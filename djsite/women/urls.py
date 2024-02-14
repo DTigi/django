@@ -3,8 +3,9 @@ from . import views, converters
 from rest_framework import routers
 
 
-router = routers.SimpleRouter()
-router.register(r"women", views.WomenViewSet)
+router = routers.DefaultRouter() # или кастомный MyCustomRouter из routers.py
+router.register(r"women", views.WomenViewSet, basename='women')
+print(router.urls)
 
 register_converter(converters.FourDigitYearConverter, "year4")
 
