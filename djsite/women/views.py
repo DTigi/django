@@ -21,11 +21,13 @@ from django.views.generic import (
 from django.core.cache import cache
 from rest_framework import generics, viewsets, mixins
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from women.forms import AddPostForm, UploadFileForm, ContactForm
 from women.models import Women, Category, TagPost, UploadFile
+from women.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from women.serializers import WomenSerializer
 from women.utils import DataMixin
 
@@ -169,40 +171,43 @@ def page_not_found(request, exception):
 # ____________________API_____________________________________________________________________
 
 
-class WomenViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet): # или просто viewsets.ModelViewSet
-    #queryset = Women.objects.all() # Если не используем queryset, то при регистрации роутера обязательно нужно прописать basename=...
+# class WomenViewSet(mixins.CreateModelMixin,
+#                    mixins.RetrieveModelMixin,
+#                    mixins.UpdateModelMixin,
+#                    mixins.DestroyModelMixin,
+#                    mixins.ListModelMixin,
+#                    GenericViewSet): # или просто viewsets.ModelViewSet
+#     #queryset = Women.objects.all() # Если не используем queryset, то при регистрации роутера обязательно нужно прописать basename=...
+#     serializer_class = WomenSerializer
+#
+#     def get_queryset(self):
+#         pk = self.kwargs.get("pk")
+#
+#         if not pk:
+#             return Women.objects.all()[:3]
+#
+#         return Women.objects.filter(pk=pk)
+#
+#     @action(methods=['get'], detail=False) # декоратор @action, с помощью которого можно через методы создавать новые, дополнительные маршруты в рамках одного вьюсета.
+#     def category(self, request): # доп параметр pk=None, в случае работы с одной определенной записью и detail=True в декораторе
+#         cats = Category.objects.all() # Category.objects.get(pk=pk) в случае работы с одной определенной записью detail=True
+#         return Response({'cats': [c.name for c in cats]}) # Response({'cats': cats.name}) для одной записи
+
+
+class WomenAPIList(generics.ListCreateAPIView):
+    queryset = Women.objects.all()
     serializer_class = WomenSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get("pk")
-
-        if not pk:
-            return Women.objects.all()[:3]
-
-        return Women.objects.filter(pk=pk)
-
-    @action(methods=['get'], detail=False) # декоратор @action, с помощью которого можно через методы создавать новые, дополнительные маршруты в рамках одного вьюсета.
-    def category(self, request): # доп параметр pk=None, в случае работы с одной определенной записью и detail=True в декораторе
-        cats = Category.objects.all() # Category.objects.get(pk=pk) в случае работы с одной определенной записью detail=True
-        return Response({'cats': [c.name for c in cats]}) # Response({'cats': cats.name}) для одной записи
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
+class WomenAPIUpdate(generics.RetrieveUpdateAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
-# class WomenAPIView(generics.ListCreateAPIView):
-#     queryset = Women.objects.all()
-#     serializer_class = WomenSerializer
-#
-#
-# class WomenAPIUpdate(generics.UpdateAPIView):
-#     queryset = Women.objects.all()
-#     serializer_class = WomenSerializer
-#
-#
-# class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Women.objects.all()
-#     serializer_class = WomenSerializer
+
+class WomenAPIDelete(generics.RetrieveDestroyAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    # permission_classes = (IsAdminUser,)
+    permission_classes = (IsAdminOrReadOnly,)
