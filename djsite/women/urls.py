@@ -1,10 +1,5 @@
 from django.urls import path, register_converter, include, re_path
 from . import views, converters
-from rest_framework import routers
-
-
-# router = routers.DefaultRouter() # или кастомный MyCustomRouter из routers.py
-# router.register(r"women", views.WomenViewSet, basename='women')
 
 register_converter(converters.FourDigitYearConverter, "year4")
 
@@ -20,11 +15,5 @@ urlpatterns = [
     path("tag/<slug:tag_slug>/", views.TagPostList.as_view(), name="tag"),
     path("edit/<slug:slug>/", views.UpdatePage.as_view(), name="edit_page"),
     path("delete/<slug:slug>/", views.DeletePage.as_view(), name="edit_page"),
-    # path("api/v1/", include(router.urls)),
-    path('api/v1/drf-auth/', include('rest_framework.urls')), # авторизация по сессиям
-    path("api/v1/women/", views.WomenAPIList.as_view()),
-    path("api/v1/women/<int:pk>/", views.WomenAPIUpdate.as_view()),
-    path("api/v1/womendelete/<int:pk>/", views.WomenAPIDelete.as_view()),
-    path('api/v1/auth/', include('djoser.urls')),          # авторизация по токенам
-    re_path(r'^auth/', include('djoser.urls.authtoken')),  # авторизация по токенам
+
 ]
