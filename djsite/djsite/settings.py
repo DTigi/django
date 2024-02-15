@@ -221,13 +221,16 @@ SOCIAL_AUTH_PIPELINE = (
 SITE_ID = 1
 
 REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 5,
+
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
     ],
 
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated', # По умолчанию 'AllowAny'
+        'rest_framework.permissions.IsAuthenticated', # По умолчанию 'AllowAny'. глобальное разграничение прав работает, если не переопределено в API-классах представлений
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
