@@ -1,4 +1,4 @@
 # Project exclude paths
 /djvenv/
-.idea
+/.idea/
 .env
