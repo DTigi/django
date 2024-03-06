@@ -5,7 +5,7 @@ async-timeout==4.0.3
 certifi==2024.2.2
 cffi==1.16.0
 charset-normalizer==3.3.2
-cryptography==42.0.2
+cryptography==42.0.4
 decorator==5.1.1
 defusedxml==0.8.0rc2
 django-debug-toolbar==4.2.0
